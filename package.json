@@ -1,0 +1,11 @@
+{
+  "name": "tipe",
+  "version": "0.0.1",
+  "main": "topography/topography.js",
+  "repository": "https://github.com/theovidal/tipe",
+  "author": "Théo VIDAL",
+  "license": "MIT",
+  "dependencies": {
+    "shapefile": "^0.6.6"
+  }
+}
