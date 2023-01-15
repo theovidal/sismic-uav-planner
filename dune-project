@@ -19,7 +19,7 @@
  (name tipe)
  (synopsis "School project for CPGE exams")
  (description "Tracing of paths for reconnaissance of an earthquake zone by drone")
- (depends ocaml dune)
+ (depends ocaml dune owl-plplot)
  (tags
   (tipe drone "geometric bisection" graph partitioning)))
 

@@ -6,6 +6,8 @@
   "author": "Théo VIDAL",
   "license": "MIT",
   "dependencies": {
-    "shapefile": "^0.6.6"
+    "cli-progress": "^3.11.0",
+    "shapefile": "^0.6.6",
+    "sqlite3": "^5.0.8"
   }
 }

@@ -13,6 +13,7 @@ bug-reports: "https://github.com/theovidal/tipe/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.4"}
+  "owl-plplot"
   "odoc" {with-doc}
 ]
 build: [

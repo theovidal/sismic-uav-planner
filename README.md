@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="assets/illustration.png" alt="illustration"/>
+    <img src="assets/illustration.png" alt="illustration" width="160"/>
     <h1>TIPE</h1>
     <h3>Tracing of paths for reconnaissance of an earthquake zone by drone</h3>
 </div>
