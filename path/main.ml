@@ -33,7 +33,7 @@ let generate_zones initial n rolls =
         let diff =
           List.length group_a - List.length group_b
           |> abs
-        in Printf.printf "Diff: %d\n" diff;
+        in
         if diff < !better_diff then begin
           better_a := group_a;
           better_b := group_b;
@@ -41,7 +41,6 @@ let generate_zones initial n rolls =
           better_pt := pt
         end
       done;
-      Printf.printf "-----------------------\nBetter point: %.3f,%.3f\n" (fst !better_pt) (snd !better_pt);
       new_zones := !better_a :: !better_b :: !new_zones
     ) !zones;
     zones := !new_zones;
@@ -51,7 +50,7 @@ let generate_zones initial n rolls =
 
 let () =
   if Array.length Sys.argv < 9 then begin
-    print_string "Missing arguments. Valid syntax: program [FILE] [ZONES] [ROLLS] [X_MIN] [X_MAX] [Y_MIN] [Y_MAX] [h]";
+    print_string "Missing arguments. Valid syntax: program [FILE] [ZONES] [ROLLS] [X_MIN] [X_MAX] [Y_MIN] [Y_MAX] [HEURISTIC]";
     exit (-1)
   end;
   let filename = Sys.argv.(1) in
@@ -61,7 +60,7 @@ let () =
   let x_max = Float.of_string Sys.argv.(5) in
   let y_min = Float.of_string Sys.argv.(6) in
   let y_max = Float.of_string Sys.argv.(7) in
-  let threshold = Float.of_string Sys.argv.(8) in
+  let heuristic = Float.of_string Sys.argv.(8) in
   let g, n = Utils.open_points filename in
 
   let h = Plot.create "plot.svg" in
@@ -74,36 +73,57 @@ let () =
     D.set y_values 0 !pt_i y;
     incr pt_i
   in
+  let lock = Mutex.create () in
+  let file = open_out "permutation.txt" in
 
-  List.iteri (fun zone_id g ->
-    let pts = Array.of_list g in
-    (* Covering tree method *)
-    (*let succ, root = Prim.prim pts 0 in
-    let path = Prim.path succ root in
-    
-    Array.iteri (fun i pt ->
-      let xA, yA = fst pts.(pt), snd pts.(pt) in
-      register_point xA yA;
-      if i < Array.length path - 1 then
-        let xB, yB = fst pts.(path.(i+1)), snd pts.(path.(i+1)) in
-        Plot.(draw_line ~h ~spec:[ LineStyle 4; colors.(zone_id mod (Array.length colors)) ] xA yA xB yB)
-    ) path *)
-
-    (* TSP and Simulated anealing method *)
-    let sigma = Annealing.annealing pts threshold in
+  let add_to_plot pts sigma zone_id =
+    Printf.printf "Thread %d finished\n" zone_id;
     let i = ref sigma.(0) in
+    Mutex.lock lock;
+    Printf.fprintf file "%d %f %f" zone_id (fst pts.(0)) (snd pts.(0));
     register_point (fst pts.(0)) (snd pts.(0));
       
     while !i <> 0 do
       let xA, yA = fst pts.(!i), snd pts.(!i) in
       register_point xA yA;
       let xB, yB = fst pts.(sigma.(!i)), snd pts.(sigma.(!i)) in
+      Printf.fprintf file " %f %f" xB yB;
       Plot.(draw_line ~h ~spec:[ LineStyle 4; colors.(zone_id mod (Array.length colors)) ] xA yA xB yB);
       i := sigma.(!i)
-    done
+    done;
+    Printf.fprintf file "\n";
+    Mutex.unlock lock
+  in
+
+  let threads = ref [] in 
+
+  List.iteri (fun zone_id g ->
+    threads := Thread.create (fun (zone_id, g) ->
+      let pts = Array.of_list g in
+      (* Covering tree method *)
+      (*let succ, root = Prim.prim pts 0 in
+      let path = Prim.path succ root in
+      
+      Array.iteri (fun i pt ->
+        let xA, yA = fst pts.(pt), snd pts.(pt) in
+        register_point xA yA;
+        if i < Array.length path - 1 then
+          let xB, yB = fst pts.(path.(i+1)), snd pts.(path.(i+1)) in
+          Plot.(draw_line ~h ~spec:[ LineStyle 4; colors.(zone_id mod (Array.length colors)) ] xA yA xB yB)
+      ) path *)
+
+      (* TSP and Simulated anealing method *)
+      let sigma = Annealing.annealing pts heuristic in
+      add_to_plot pts sigma zone_id
+      ) (zone_id, g) :: !threads
+    
   ) (generate_zones [g] zones rolls);
+
+  List.iter Thread.join !threads;
+
   Plot.(scatter ~h ~spec:[ Marker "#[0x2295]"; MarkerSize 1. ] x_values y_values);
   Plot.set_xrange h x_min x_max;
   Plot.set_yrange h y_min y_max;
-  Plot.output h
+  Plot.output h;
+  close_out file
   

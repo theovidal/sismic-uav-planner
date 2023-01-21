@@ -72,6 +72,8 @@ let circuit_distance (pts : points) sigma =
   done;
   !d
 
+exception Too_few_changes
+
 let annealing (pts : points) h =
   let n = Array.length pts in
   let invT = ref 0. in
@@ -95,6 +97,5 @@ let annealing (pts : points) h =
         f := !f +. delta
       )
     done;
-    Printf.printf "1/T: %f; number of changes: %d\n" !invT !changes
   done;
   sigma
