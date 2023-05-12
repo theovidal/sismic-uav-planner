@@ -25,6 +25,7 @@ let permute ?(transformation = -2) ?(a = -1) pts (n, sigma, sigmainv : permutati
   let invA = sigmainv.(a) in
   let nextB = sigma.(b) in
 
+  (* Apply the chosen transformation to the path, or a random one *)
   match transformation with
   | -2 ->
     if Random.int 2 == 0 then (* REVERSE *)
@@ -63,6 +64,7 @@ let permute ?(transformation = -2) ?(a = -1) pts (n, sigma, sigmainv : permutati
     sigmainv.(nextC) <- invC;
     0., c, -1
 
+(* Compute the distance of a circuit *)
 let circuit_distance (pts : points) sigma =
   let d = ref (Utils.distance pts.(0) pts.(sigma.(0))) in
   let i = ref sigma.(0) in
@@ -72,8 +74,7 @@ let circuit_distance (pts : points) sigma =
   done;
   !d
 
-exception Too_few_changes
-
+(* Simulated annealing *)
 let annealing (pts : points) h =
   let n = Array.length pts in
   let invT = ref 0. in
@@ -84,12 +85,15 @@ let annealing (pts : points) h =
 
   while !changes > 0 do
     changes := 0;
-    invT := !invT +. 1.; (* astuce pour éviter de calculer des flottants lourds *)
+    (* Manipulating the inverse in order not to manipulate floats *)
+    invT := !invT +. 1.;
+
     let _threshold = exp (!invT *. h) in
     for _k = 0 to int_of_float h (*ceil threshold*) do
       (* Printf.printf "%d/%d\n" k (int_of_float (ceil threshold)); *)
       let delta, transformation, a = permute pts (n, sigma, sigmainv) in
       let p = exp (-.delta *. !invT) in
+
       (* Metropolis rule *)
       if delta < 0. || Random.float 1. < p then (
         incr changes;

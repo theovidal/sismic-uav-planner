@@ -20,7 +20,6 @@ let open_points filename =
     while true do
       let next = input_line stream in
       Scanf.sscanf next "%f %f" (fun x y ->
-        Printf.printf "%f %f\n" x y;
         pts := (x/.100000., y/.1000000.) :: !pts;
         incr n
       )

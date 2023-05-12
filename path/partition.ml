@@ -12,6 +12,7 @@ Tracing of paths for reconnaissance of an earthquake zone by drone
                    VIDAL Théo - 962 MPI*
 *)
 
+(* Shorthand for the matrix product *)
 let (<>*) = Matrix.product
 
 (* Do the inverse stereographic projection ℝ² -> S³ on one point *)
@@ -80,13 +81,10 @@ let geometric_bisection points =
   let rand_phi = Random.float (2. *. Float.pi) in
   let great_circle_pt = (Matrix.y_rotation rand_theta <>* Matrix.z_rotation rand_phi) <>* Matrix.from_coords (0.,0.,1.) in
 
-  Printf.printf "r = %f\n" r;
-
   (* Center of the circle is the first element of the array ; the other point belongs to C and is the helper to draw it *)
   let circle = unmap r theta phi [(0., 0., 0.); Matrix.to_coords great_circle_pt] in
   let o = List.hd circle in
   let a = List.tl circle |> List.hd in
-  Printf.printf "Circle C: %.3f,%.3f — %.3f,%.3f — " (fst o) (snd o) (fst a) (snd a);
   let radius = Utils.distance a o in
 
   (* Make the two groups: in/out of the circle *)

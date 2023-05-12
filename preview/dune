@@ -1,0 +1,4 @@
+(executable
+ (public_name plot)
+ (name plot)
+ (libraries "owl-plplot" "owl"))

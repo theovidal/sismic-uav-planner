@@ -1,6 +1,8 @@
 .idea
 .vscode
-data
+data/B*
+data/S*
 node_modules
 _build
 *.svg
+*.csv

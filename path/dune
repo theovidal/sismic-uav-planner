@@ -1,4 +1,4 @@
 (executable
- (public_name tipe)
+ (public_name path)
  (name main)
- (libraries threads "owl-plplot" "owl" "dbf"))
+ (libraries threads))
