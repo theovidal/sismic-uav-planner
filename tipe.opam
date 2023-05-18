@@ -8,7 +8,7 @@ authors: ["Théo Vidal"]
 license: "LICENSE"
 tags: ["tipe" "drone" "geometric bisection" "graph" "partitioning"]
 homepage: "https://github.com/theovidal/tipe"
-doc: "https://url/to/documentation"
+doc: "https://github.com/theovidal/tipe"
 bug-reports: "https://github.com/theovidal/tipe/issues"
 depends: [
   "ocaml"

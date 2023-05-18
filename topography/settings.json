@@ -1,0 +1,19 @@
+{
+    "default_weight": 1.0,
+
+    "residential_label": "Résidentiel",
+    "residential_weight": 1.0,
+    "residential_housing_weight": 0.1,
+
+    "commercial_label": "Commercial et services",
+    "commercial_weight": 1.5,
+
+    "industrial_label": "Industriel",
+    "industrial_weight": 1.8,
+
+    "health_label": "Santé",
+    "health_weight": 2.0,
+
+    "tower_label": "Tour et donjon",
+    "tower_weight": 2.0
+}

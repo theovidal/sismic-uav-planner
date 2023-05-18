@@ -2,6 +2,7 @@
 .vscode
 data/B*
 data/S*
+data/map
 node_modules
 _build
 *.svg
