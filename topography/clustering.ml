@@ -44,11 +44,10 @@ let distance points a b =
   | [x], [y] -> Utils.distance points.(x) points.(y)
   | _ -> failwith "invalid input"
 
-
 (* Compute the initial dissimilarity matrix for the HAC algorithm *)
 let compute_dissimilarity points classes =
   let n = Array.length classes in
-  let dissim = Array.make_matrix n n infinity in
+  let dissim = Array.init n (fun i -> Array.make i 0.) in
   let nearest = Array.init n (fun i -> i) in
   let dist_to_nearest = Array.make n infinity in
 
@@ -68,6 +67,14 @@ let compute_dissimilarity points classes =
   done;
   dissim, nearest, dist_to_nearest
 
+let print_list_array a =
+  Array.iter (fun l ->
+    print_string "[ ";
+    List.iter (fun i -> Printf.printf "%d " i) l;
+    print_string "]\n"
+  ) a
+
+(* Main function *)
 let ahc threshold pts =
   let classes = Array.init (Array.length pts) (fun i -> [i]) in
   let n = Array.length classes in
@@ -78,6 +85,7 @@ let ahc threshold pts =
 
   (* 2. Main execution loop - until the threshold is reached *)
   while n - !nb_removed > threshold do
+    Printf.printf "\rRemoved %d points" !nb_removed;
     (* 3. Find the two nearest classes *)
     let (_, imin) = find_min_filtered dist_to_nearest indices in
     let (i, j) = matrix_indices imin nearest.(imin) in
@@ -89,7 +97,6 @@ let ahc threshold pts =
     let min_k = ref (-1) in
     let min_d = ref infinity in
     exec_filtered (fun k ->
-      Printf.printf "%d " k;
       if k <> i then begin
         let i', k' = matrix_indices i k in
         let m = min (matrix_value dissim i k) (matrix_value dissim j k) in
@@ -108,6 +115,7 @@ let ahc threshold pts =
     dist_to_nearest.(i) <- !min_d;
     dist_to_nearest.(j) <- infinity
   done;
+  (*print_list_array classes;*)
 
   (* 6. Give back the classes found *)
   let merged = Array.make (n - !nb_removed) [] in
