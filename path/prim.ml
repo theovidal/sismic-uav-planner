@@ -8,7 +8,7 @@
                 \|__|  \|__|\|__|     \|_______|
                                         
 Tracing of paths for reconnaissance of an earthquake zone by drone
-                "Zone pathways drawing" part
+               Prim algorithm to trace paths
                    VIDAL Théo - 962 MPI*                       
 *)
 

@@ -1,3 +1,17 @@
+(*
+         _________  ___  ________  _______      
+        |\___   ___\\  \|\   __  \|\  ___ \     
+        \|___ \  \_\ \  \ \  \|\  \ \   __/|    
+             \ \  \ \ \  \ \   ____\ \  \_|/__  
+              \ \  \ \ \  \ \  \___|\ \  \_|\ \ 
+               \ \__\ \ \__\ \__\    \ \_______\
+                \|__|  \|__|\|__|     \|_______|
+                                        
+             Tracing of paths for reconnaissance of an earthquake zone by drone
+Entry point of the plot program, to visualize in 2D the solution found by the path algorithm
+                                  VIDAL Théo - 962 MPI*
+*)
+
 open Owl_plplot
 open Owl_dense_matrix
 
@@ -47,7 +61,7 @@ let () =
     let color = Plot.RGB (Random.int 255, Random.int 255, Random.int 255) in
 
     let draw_line (xA, yA) (xB, yB) =
-      Plot.(draw_line ~h ~spec:[ LineStyle 4; color ] xA yA xB yB)
+      Plot.(draw_line ~h ~spec:[ LineStyle 4; color; LineWidth 0.7 ] xA yA xB yB)
     in
 
     let n = Array.length pts in
@@ -61,7 +75,7 @@ let () =
 
   List.iter (fun sigma -> add_to_plot sigma) perms;
 
-  Plot.(scatter ~h ~spec:[ Marker "#[0x2295]"; MarkerSize 1. ] x_values y_values);
+  Plot.(scatter ~h ~spec:[ Marker "#[0x25CF]"; MarkerSize 1.7 ] x_values y_values);
   Plot.set_xrange h x_min x_max;
   Plot.set_yrange h y_min y_max;
   Plot.output h
