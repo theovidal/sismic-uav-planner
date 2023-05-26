@@ -1,7 +1,10 @@
 .idea
 .vscode
-data/B*
+data/rhone*
+*.zip
+*.7z
 data/S*
+data/B*
 data/map
 node_modules
 _build
