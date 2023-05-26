@@ -15,6 +15,9 @@ Tracing of paths for reconnaissance of an earthquake zone by drone
 (* A permutation is a tuple of an integer n and two arrays of size n *)
 type permutation = int * int array * int array
 
+let distance (xA, yA) (xB, yB) =
+  sqrt ((xB -. xA) ** 2. +. (yB -. yA) ** 2.)
+
 (* Generate a random integer between a and b, except a and b *)
 let random_except n a b =
   let c = ref a in
@@ -45,19 +48,19 @@ let permute ?(transformation = -2) ?(a = -1) points (n, sigma, sigmainv : permut
   match transformation with
   | -2 ->
     if Random.int 2 == 0 then (* REVERSE *)
-         Utils.distance2 points.(invA) points.(b)
-      +. Utils.distance2 points.(a) points.(nextB)
-      -. Utils.distance2 points.(invA) points.(a)
-      -. Utils.distance2 points.(b) points.(nextB),     -1, a
+         distance points.(invA) points.(b)
+      +. distance points.(a) points.(nextB)
+      -. distance points.(invA) points.(a)
+      -. distance points.(b) points.(nextB),     -1, a
     else (* TRANSPORT *)
       let c = random_except n a b in
       let invC, nextC = sigmainv.(c), sigma.(c) in
-         Utils.distance2 points.(a) points.(c)
-      +. Utils.distance2 points.(c) points.(b)
-      +. Utils.distance2 points.(invC) points.(nextC)
-      -. Utils.distance2 points.(a) points.(b)
-      -. Utils.distance2 points.(invC) points.(c)
-      -. Utils.distance2 points.(c) points.(nextC),     c, a
+         distance points.(a) points.(c)
+      +. distance points.(c) points.(b)
+      +. distance points.(invC) points.(nextC)
+      -. distance points.(a) points.(b)
+      -. distance points.(invC) points.(c)
+      -. distance points.(c) points.(nextC),     c, a
 
   | -1 -> (* REVERSE*)
     sigma.(invA) <- b;
@@ -82,18 +85,19 @@ let permute ?(transformation = -2) ?(a = -1) points (n, sigma, sigmainv : permut
 
 (* Compute the distance of a circuit *)
 let circuit_distance points sigma =
-  let d = ref (Utils.distance2 points.(0) points.(sigma.(0))) in
+  let d = ref (distance points.(0) points.(sigma.(0))) in
   let i = ref sigma.(0) in
   while !i <> 0 do
-    d := Utils.distance2 points.(!i) points.(sigma.(!i)) +. !d;
+    d := distance points.(!i) points.(sigma.(!i)) +. !d;
     i := sigma.(!i);
   done;
   !d
 
 (* Simulated annealing algorithm *)
 let annealing points h =
+  Random.self_init ();
   let n = Array.length points in
-  let invT = ref 0. in
+  let invT = ref 1. in
   let (_, sigma, sigmainv) = basic_permutation n in
   let f = ref (circuit_distance points sigma) in
 
@@ -102,9 +106,10 @@ let annealing points h =
   while !changes > 0 do
     changes := 0;
     (* Manipulating the inverse in order not to manipulate floats *)
-    invT := !invT +. 1.;
+    (* At each step, temperature is 0.9 times that of the previous step *)
+    invT := !invT *. 1.05;
 
-    for _k = 0 to h * n do
+    for _k = 0 to n * h do
       (* Printf.printf "%d/%d\n" k (int_of_float (ceil threshold)); *)
       let delta, transformation, a = permute points (n, sigma, sigmainv) in
       let p = exp (-.delta *. !invT) in

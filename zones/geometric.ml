@@ -181,10 +181,17 @@ let geometric_bisection pole rolls points =
   let theta, phi, r = confort pole centroid in
 
   (* We calculate many great circles and find the one which best separates the set into half *)
-  let better_in = ref [] in
+  let zone_in = {
+    points = [];
+    average_distance = 0.;
+    max_distance = 0.
+  } in
+  let zone_out = {
+    points = [];
+    average_distance = 0.;
+    max_distance = 0.
+  } in
   let better_diff = ref max_int in
-  let better_out = ref [] in
-  let better_pt = ref (Utils.null ()) in
   for _ = 1 to rolls do
     let great_circle_pt = generate_great_circle pole.z in
 
@@ -202,14 +209,21 @@ let geometric_bisection pole rolls points =
       if Utils.distance2 point circle_origin < radius then discriminate (point :: group_in) group_out (diff + 1) tl
       else discriminate group_in (point :: group_out) (diff - 1) tl
 
-    in let group_in, group_out, diff = discriminate [] [] 0 points in
+    in
+    let group_in, group_out, diff = discriminate [] [] 0 points in
 
     if abs diff < !better_diff then begin
-      better_in := group_in;
-      better_out := group_out;
-      better_diff := abs diff;
-      better_pt := circle_end
+      zone_in.points <- group_in;
+      zone_out.points <- group_out;
+      better_diff := abs diff
     end
   done;
-  !better_in, !better_out
+
+  let max_in, avg_in = Utils.max_and_average_distance zone_in.points in
+  zone_in.average_distance <- avg_in;
+  zone_in.max_distance <- max_in;
+  let max_out, avg_out = Utils.max_and_average_distance zone_out.points in
+  zone_out.average_distance <- avg_out;
+  zone_out.max_distance <- max_out;
+  zone_in, zone_out
   
