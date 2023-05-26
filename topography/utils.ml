@@ -34,8 +34,14 @@ let open_points filename =
       let next = Csv.next stream |> Array.of_list in
       Printf.printf "\rReading points: %d" i;
       aux ({
-          x = float_of_string next.(0) /.100000.;
-          y = float_of_string next.(1) /.1000000.;
+          x =
+            ((float_of_string next.(0)
+            |> int_of_float) mod 800000) / 10
+            |> float_of_int;
+          y =
+            ((float_of_string next.(1)
+            |> int_of_float) mod 6000000) / 10
+            |> float_of_int;
           nature = next.(2);
           use = next.(3);
           state = next.(4);
