@@ -45,7 +45,8 @@ let plot_bezier input_file output_file precision x_min x_max y_min y_max =
   let h = Plot.create output_file in
   Plot.set_pen_size h 2.;
   let perms, _nb_zones, _nb_points = Utils.read_permutation input_file in
-  List.iter (fun points ->
+
+  let add_zone (_, points) =
     let zone_xmin, zone_xmax, zone_ymin, zone_ymax = bounds points in
     if zone_xmin < x_min || zone_xmax > x_max || zone_ymin < y_min || zone_ymax > y_max then
       ()
@@ -91,7 +92,8 @@ let plot_bezier input_file output_file precision x_min x_max y_min y_max =
     done;*)
 
     Plot.(scatter ~h ~spec:[ color; MarkerSize 2.7 ] curb_x curb_y);
-  ) perms;
+  in
+  List.iter add_zone perms;
   
   Plot.set_xrange h x_min x_max;
   Plot.set_yrange h y_min y_max;

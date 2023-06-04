@@ -14,8 +14,10 @@ let print_chart input_file output_file x_min x_max y_min y_max =
     incr pt_i
   in
 
-  let add_to_plot pts =
+  let add_to_plot (zone_id, pts) =
     Random.self_init ();
+    let (x, y) = Utils.barycenter pts in
+    Plot.(text ~h ~spec:[ RGB (0,255,0) ] x y (string_of_int zone_id));
     let color = Plot.RGB (Random.int 255, Random.int 255, Random.int 255) in
 
     let draw_line (xA, yA) (xB, yB) =
@@ -31,7 +33,7 @@ let print_chart input_file output_file x_min x_max y_min y_max =
     register_point pts.(n - 1)
   in
 
-  List.iter (fun sigma -> add_to_plot sigma) perms;
+  List.iter add_to_plot perms;
 
   Plot.(scatter ~h ~spec:[ Marker "#[0x25CF]"; MarkerSize 2.7 ] x_values y_values);
   Plot.set_xrange h x_min x_max;

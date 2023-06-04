@@ -1,17 +1,3 @@
-(*
-         _________  ___  ________  _______      
-        |\___   ___\\  \|\   __  \|\  ___ \     
-        \|___ \  \_\ \  \ \  \|\  \ \   __/|    
-             \ \  \ \ \  \ \   ____\ \  \_|/__  
-              \ \  \ \ \  \ \  \___|\ \  \_|\ \ 
-               \ \__\ \ \__\ \__\    \ \_______\
-                \|__|  \|__|\|__|     \|_______|
-                                        
-             Tracing of paths for reconnaissance of an earthquake zone by drone
-Entry point of the plot program, to visualize in 2D the solution found by the path algorithm
-                                  VIDAL Théo - 962 MPI*
-*)
-
 let () =
   if Array.length Sys.argv < 2 then begin
     print_string "Missing arguments. Valid syntax: program [input] [XMIN] [XMAX] [YMIN] [YMAX] (method) (output=output.geojson)";

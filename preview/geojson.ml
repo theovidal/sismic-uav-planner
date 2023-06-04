@@ -1,4 +1,3 @@
-
 let output_geojson input_file output_file =
   let output = open_out output_file in
   Printf.fprintf output "{ \"name\": \"Parcours de drones\", \"type\": \"FeatureCollection\", \"features\": [\n";
