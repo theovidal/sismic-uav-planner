@@ -41,7 +41,8 @@ let bounds pts =
   !x_min, !x_max, !y_min, !y_max
 
 (* Plot the bezier curve associated to the points with `precision` points for each *)
-let plot_bezier input_file output_file precision x_min x_max y_min y_max = 
+let plot_bezier input_file output_file x_min x_max y_min y_max = 
+  let precision = 100 in
   let h = Plot.create output_file in
   Plot.set_pen_size h 2.;
   let perms, _nb_zones, _nb_points = Utils.read_permutation input_file in

@@ -1,11 +1,6 @@
 .idea
 .vscode
-data/rhone*
-*.zip
-*.7z
-data/S*
-data/B*
-data/map
+data
 node_modules
 _build
 *.svg

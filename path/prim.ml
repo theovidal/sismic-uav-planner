@@ -1,17 +1,3 @@
-(*
-         _________  ___  ________  _______      
-        |\___   ___\\  \|\   __  \|\  ___ \     
-        \|___ \  \_\ \  \ \  \|\  \ \   __/|    
-             \ \  \ \ \  \ \   ____\ \  \_|/__  
-              \ \  \ \ \  \ \  \___|\ \  \_|\ \ 
-               \ \__\ \ \__\ \__\    \ \_______\
-                \|__|  \|__|\|__|     \|_______|
-                                        
-Tracing of paths for reconnaissance of an earthquake zone by drone
-               Prim algorithm to trace paths
-                   VIDAL Théo - 962 MPI*                       
-*)
-
 (* Transforms a tree stored under a predecessors array into an adjacence list *)
 let tree_succ_from_pred pred =
   let n = Array.length pred in
@@ -58,3 +44,5 @@ let path t root =
     List.iter (fun i -> aux i) t.(x);
   in aux root;
   Array.of_list (List.rev !res)
+
+(* Get the permutation associated with a tree successors array *)

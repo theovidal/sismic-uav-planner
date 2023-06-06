@@ -1,3 +1,9 @@
+type zone = {
+  mutable ids : int list;
+  mutable average_distance : float;
+  mutable max_distance : float;
+}
+
 type point = {
   x: float;
   y: float;
@@ -15,19 +21,28 @@ let null () = {
 (* Euclidian distance in R² *)
 let distance2 p p' = sqrt ((p'.x -. p.x) ** 2. +. (p'.y -. p.y) ** 2.)
 
+let add_points a b = {
+  x = a.x +. b.x;
+  y = a.y +. b.y;
+  z = a.z +. b.z;
+  weight = a.weight +. b.weight
+}
+
 (* Maximum and average distance between two points in a list *)
-let max_and_average_distance points =
+let max_and_average_distance points ids =
   let max_dist = ref 0. in
   let avg_dist = ref 0. in
   let num_pts = ref 0 in
-  List.iter (fun pt ->
+  List.iter (fun id ->
     incr num_pts;
-    List.iter (fun pt' ->
+    let pt = points.(id) in
+    List.iter (fun id' ->
+      let pt' = points.(id') in
       let dist = distance2 pt pt' in
       max_dist := max !max_dist dist;
       avg_dist := !avg_dist +. dist
-    ) points
-  ) points;
+    ) ids
+  ) ids;
   let n = float_of_int !num_pts in
   !max_dist, !avg_dist /. (n *. (n -. 1.))
 
@@ -67,9 +82,3 @@ let open_points filename =
       )
   done;
   points
-
-type zone = {
-  mutable points : point list;
-  mutable average_distance : float;
-  mutable max_distance : float;
-}

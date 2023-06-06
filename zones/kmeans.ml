@@ -53,7 +53,7 @@ let update_centers points centers refs =
   for i = 0 to n - 1 do
     let c = refs.(i) in
     let (xc, yc) = centers.(c) in
-    centers.(c) <- (xc +. points.(i).x, yc +. points.(i).y);
+    centers.(c) <- (xc +. points.(i).x *. points.(i).weight, yc +. points.(i).y *. points.(i).weight);
     nb_points.(c) <- nb_points.(c) +. 1.
   done;
   for c = 0 to k - 1 do
@@ -73,7 +73,7 @@ let update_refs points centers refs =
   done;
   !has_changed
 
-let kmeans points k itermax =
+let kmeans points k itermax _ =
   let n = Array.length points in
   let centers = get_random_points k points in
   let refs = Array.make n 0 in
@@ -84,4 +84,4 @@ let kmeans points k itermax =
     Printf.printf "done iteration %d\n" !i;
     incr i
   done;
-  refs
+  refs, k

@@ -1,17 +1,3 @@
-(*
-         _________  ___  ________  _______      
-        |\___   ___\\  \|\   __  \|\  ___ \     
-        \|___ \  \_\ \  \ \  \|\  \ \   __/|    
-             \ \  \ \ \  \ \   ____\ \  \_|/__  
-              \ \  \ \ \  \ \  \___|\ \  \_|\ \ 
-               \ \__\ \ \__\ \__\    \ \_______\
-                \|__|  \|__|\|__|     \|_______|
-                                        
-      Tracing of paths for reconnaissance of an earthquake zone by drone
-Entry point of the path program, to distinguish zones and trace paths inside them
-                           VIDAL Théo - 962 MPI*
-*)
-
 let print_point file (x, y) = Printf.fprintf file "%f %f\n" x y
 
 let open_points filename =
@@ -38,13 +24,16 @@ let open_classes n filename =
 
 let () =
   if Array.length Sys.argv < 4 then begin
-    print_string "Missing arguments. Valid syntax: program [points] [classes] [HEURISTIC] (output=permutation.txt)\n";
+    print_string "Missing arguments. Valid syntax: program [points] [classes] [HEURISTIC] (method:annealing/covering) (output=permutation.txt) (data=none)\n";
     exit (-1)
   end;
   let points_filename = Sys.argv.(1) in
   let classes_filename = Sys.argv.(2) in
   let heuristic = int_of_string Sys.argv.(3) in
-  let output = if Array.length Sys.argv > 4 then Sys.argv.(4) else "permutation.txt" in
+  let meth = Sys.argv.(4) in
+  let output = if Array.length Sys.argv > 5 then Sys.argv.(5) else "permutation.txt" in
+  let data_folder = if Array.length Sys.argv > 6 then Sys.argv.(6) else "" in
+  let benchmark_output = if data_folder <> "" then open_out (data_folder ^ "/benchmark.csv") else stdout in
 
   let lock = Mutex.create () in
   let points = open_points points_filename in
@@ -56,47 +45,48 @@ let () =
 
   let output_file = open_out output in
 
-  let save_zone pts sigma zone_id =
+  let save_zone pts zone_id sigma time =
     let i = ref sigma.(0) in
     Mutex.lock lock;
-    Printf.fprintf output_file "%d\n" (Array.length sigma);
+    Printf.fprintf output_file "%d %d\n" zone_id (Array.length sigma);
+    Printf.fprintf benchmark_output "%d,%d,%f\n" zone_id heuristic time;
     print_point output_file pts.(0);
     
     while !i <> 0 do
       print_point output_file pts.(!i);
       i := sigma.(!i) 
     done;
-    Mutex.unlock lock;
-    Printf.printf "Thread %d finished\n" zone_id;
+    Mutex.unlock lock
   in
 
-  let threads = ref [] in 
+  let threads = ref [] in
+
+  (* Precalculating the average delta to adjust well the temperature for the algorithm *)
+  let start_time = Sys.time () in
+  let delta = if meth = "annealing" then Annealing.average_delta points (Array.length classes) heuristic else 0. in
+  let end_time = Sys.time () in
+  Printf.fprintf benchmark_output "delta,%d,%f\n" heuristic (end_time -. start_time);
 
   Array.iteri (fun zone_id points ->
     threads := Thread.create (fun (zone_id, g) ->
       let points = Array.of_list g in
-      if Array.length points = 0 then () else begin
-        Printf.printf "%d\n" (Array.length points);
-        (* Covering tree method *)
-        (*let succ, root = Prim.prim pts 0 in
-        let path = Prim.path succ root in
-        
-        Array.iteri (fun i pt ->
-          let xA, yA = fst pts.(pt), snd pts.(pt) in
-          register_point xA yA;
-          if i < Array.length path - 1 then
-            let xB, yB = fst pts.(path.(i+1)), snd pts.(path.(i+1)) in
-            Plot.(draw_line ~h ~spec:[ LineStyle 4; colors.(zone_id mod (Array.length colors)) ] xA yA xB yB)
-        ) path *)
+      let n = Array.length points in
+      if n = 0 then () else begin
+        if meth = "annealing" then 
+          (* TSP with Simulated anealing method *)
+          let sigma, time = Annealing.annealing zone_id points (heuristic * n) delta data_folder in
+          save_zone points zone_id sigma time
 
-        (* TSP and Simulated anealing method *)
-        let sigma = Annealing.annealing points heuristic in
-        save_zone points sigma zone_id
+        (*else if meth = "covering" then
+          (* Covering tree method *)
+          let succ, root = Prim.prim pts 0 in
+          let path = Prim.path succ root in*)
+          
+        else failwith "Unknown method"
       end
       ) (zone_id, points) :: !threads
     
   ) classes;
-  (* (generate_zones pole g alpha zones rolls);*)
 
   List.iter Thread.join !threads;
   close_out output_file;

@@ -1,17 +1,3 @@
-(*
-         _________  ___  ________  _______      
-        |\___   ___\\  \|\   __  \|\  ___ \     
-        \|___ \  \_\ \  \ \  \|\  \ \   __/|    
-             \ \  \ \ \  \ \   ____\ \  \_|/__  
-              \ \  \ \ \  \ \  \___|\ \  \_|\ \ 
-               \ \__\ \ \__\ \__\    \ \_______\
-                \|__|  \|__|\|__|     \|_______|
-                                        
-Tracing of paths for reconnaissance of an earthquake zone by drone
-   Bottom-up hierarchical clustering algorithm to gather points that are too near from each other
-                   VIDAL Théo - 962 MPI*
-*)
-
 (* Get the correct indices in the semi-matrix
    (using symetry to restrict storage to the bottom triangle) *)
 let matrix_indices i j = if j < i then (i, j) else (j, i)

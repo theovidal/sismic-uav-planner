@@ -9,15 +9,14 @@
 This project is programmed in OCaml and uses opam and dune for building. Main commands are:
 
 ```bash
-dune exec tipe    # Run the program quickly
+dune exec topography    # Run the program quickly
+dune exec topography / zones / path / preview
 dune build        # Build the program; output is in the _build directory
 ```
 
 ## 📜 Credits
 
-- Materials used :
-    - [Problème du voyageur de commerce euclidien](http://perso.eleves.ens-rennes.fr/people/clarence.kineider/DevsInfo/TSPE.pdf), Clarence Kineider
-    - [Geometric Mesh Partitioning: Implementation and Experiments](https://www.cs.cmu.edu/~glmiller/Publications/GiMiTe98.pdf), John R. Gilbert, Gary L. Miller, Shang-Hua Teng
+All resources and materials used are referenced on the [Notion page](https://theo-vidal.notion.site/TIPE-e76f332f69aa47368b4cce6426bfec1d) of the project, as well as some general considerations and explanations
 
 ## 🔐 License
 

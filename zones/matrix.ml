@@ -1,18 +1,9 @@
-(*
-       _________  ___  ________  _______      
-      |\___   ___\\  \|\   __  \|\  ___ \     
-      \|___ \  \_\ \  \ \  \|\  \ \   __/|    
-           \ \  \ \ \  \ \   ____\ \  \_|/__  
-            \ \  \ \ \  \ \  \___|\ \  \_|\ \ 
-             \ \__\ \ \__\ \__\    \ \_______\
-              \|__|  \|__|\|__|     \|_______|
-              
-                  Matrices module
-*)
+open Utils
 
 let product a b =
   if Array.length b == 0 || Array.length a == 0 || Array.length a.(0) <> Array.length b then
-    failwith "Multiplication matricielle impossible"
+    Printf.sprintf "Cannot multiply %dx%d matrix with %dx%d matrix" (Array.length a) (Array.length a.(0)) (Array.length b) (Array.length b.(0))
+    |> failwith
   else
     let n = Array.length a in
     let p = Array.length b in
@@ -43,4 +34,15 @@ let z_rotation phi =
 
 let from_coords (x, y, z) = [| [|x|]; [|y|]; [|z|] |]
 
-let to_coords mat = mat.(0).(0), mat.(1).(0), mat.(2).(0)
+let to_point m = {
+  x = m.(0).(0);
+  y = m.(1).(0);
+  z = m.(2).(0);
+  weight = 1.
+}
+
+let of_point p = [|
+  [|p.x|];
+  [|p.y|];
+  [|p.z|]
+|]
