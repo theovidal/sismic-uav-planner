@@ -3,20 +3,25 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import os
+import os, sys
 
-def plot_graph(id, heuristic, score):
+
+def plot_graph(output, id, heuristic, score):
     plt.scatter(heuristic, score)
     plt.xlabel('Heuristic')
     plt.ylabel('Score')
     plt.title('Score vs Heuristic for id: '+str(id))
-    plt.savefig('data/test/scores/'+str(id)+'.png')
+    plt.savefig(output+'/'+str(id)+'.png')
     plt.close()
 
 def main():
 
+    # Get the two parameters passed by the user : input file and output folder
+    input_file = sys.argv[1]
+    output_folder = sys.argv[2]
+
     # Read scores from file
-    scores = np.loadtxt('data/test/scores.csv', delimiter=',', dtype=int)
+    scores = np.loadtxt(input_file, delimiter=',', dtype=int)
     scores = scores[scores[:,0].argsort()]
 
     # Create directory for storing graphs
@@ -28,7 +33,7 @@ def main():
         id = i
         heuristic = scores[scores[:,0]==id][:,1]
         score = scores[scores[:,0]==id][:,2]
-        plot_graph(id, heuristic, score)
+        plot_graph(output_folder, id, heuristic, score)
 
 if __name__ == '__main__':
     main()
