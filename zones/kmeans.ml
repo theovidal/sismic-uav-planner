@@ -54,7 +54,7 @@ let update_centers points centers refs =
     let c = refs.(i) in
     let (xc, yc) = centers.(c) in
     centers.(c) <- (xc +. points.(i).x *. points.(i).weight, yc +. points.(i).y *. points.(i).weight);
-    nb_points.(c) <- nb_points.(c) +. 1.
+    nb_points.(c) <- nb_points.(c) +. points.(i).weight
   done;
   for c = 0 to k - 1 do
     if nb_points.(c) > 0. then 
@@ -73,15 +73,15 @@ let update_refs points centers refs =
   done;
   !has_changed
 
-let kmeans points k itermax _ =
+let kmeans points nb_zones rolls _alpha =
   let n = Array.length points in
-  let centers = get_random_points k points in
+  let centers = get_random_points nb_zones points in
   let refs = Array.make n 0 in
 
   let i = ref 0 in
-  while !i < itermax && update_refs points centers refs do
+  while !i < rolls && update_refs points centers refs do
     update_centers points centers refs;
-    Printf.printf "done iteration %d\n" !i;
     incr i
   done;
-  refs, k
+  Printf.printf "Convergence in %d iterations\n" !i;
+  refs, nb_zones

@@ -1,12 +1,16 @@
 {
   "name": "tipe",
   "version": "0.0.1",
-  "main": "topography/topography.js",
+  "main": "mines.js",
   "repository": "https://github.com/theovidal/tipe",
   "author": "Théo VIDAL",
   "license": "MIT",
+  "scripts": {
+    "start": "node mines.js"
+  },
   "dependencies": {
     "cli-progress": "^3.11.0",
+    "puppeteer": "^20.5.0",
     "shapefile": "^0.6.6",
     "sqlite3": "^5.0.8"
   }

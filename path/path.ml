@@ -13,9 +13,10 @@ let open_points filename =
   points
 
 let open_classes n filename =
+  let classes = Array.make n 0 in
+  if filename = "null" then classes, 1 else
   let stream = open_in filename in
   let k = int_of_string (input_line stream) in
-  let classes = Array.make n 0 in
   for i = 0 to n - 1 do
     classes.(i) <- int_of_string (input_line stream)
   done;
@@ -24,7 +25,7 @@ let open_classes n filename =
 
 let () =
   if Array.length Sys.argv < 4 then begin
-    print_string "Missing arguments. Valid syntax: program [points] [classes] [HEURISTIC] (method:annealing/covering) (output=permutation.txt) (data=none)\n";
+    print_string "Missing arguments. Valid syntax: program [points] [classes?] [HEURISTIC] (method:annealing/covering) (output=permutation.txt) (data=none)\n";
     exit (-1)
   end;
   let points_filename = Sys.argv.(1) in
@@ -45,11 +46,11 @@ let () =
 
   let output_file = open_out output in
 
-  let save_zone pts zone_id sigma time =
+  let save_zone pts zone_id sigma score time =
     let i = ref sigma.(0) in
     Mutex.lock lock;
     Printf.fprintf output_file "%d %d\n" zone_id (Array.length sigma);
-    Printf.fprintf benchmark_output "%d,%d,%f\n" zone_id heuristic time;
+    Printf.fprintf benchmark_output "%d,%d,%f,%f\n" zone_id heuristic score time;
     print_point output_file pts.(0);
     
     while !i <> 0 do
@@ -74,8 +75,8 @@ let () =
       if n = 0 then () else begin
         if meth = "annealing" then 
           (* TSP with Simulated anealing method *)
-          let sigma, time = Annealing.annealing zone_id points (heuristic * n) delta data_folder in
-          save_zone points zone_id sigma time
+          let sigma, score, time = Annealing.annealing zone_id points (heuristic * n) delta data_folder in
+          save_zone points zone_id sigma score time
 
         (*else if meth = "covering" then
           (* Covering tree method *)
@@ -90,5 +91,5 @@ let () =
 
   List.iter Thread.join !threads;
   close_out output_file;
-  Printf.printf "Done.\n"
+  Printf.printf "Path: Done.\n"
   

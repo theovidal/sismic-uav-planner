@@ -89,36 +89,10 @@ let unmap pole r theta phi =
       |> Matrix.to_point
       |> Utils.add_points flat_pole
       |> stereographic pole
-    (*
-    let pt' = stereographic local_pole pt in
-    let pt'' =
-    inverse_stereographic local_pole {
-      x = pt'.x /. r;
-      y = pt'.y /. r;
-      z = 0.;
-      weight = pt'.weight
-    }
-    |> stereographic local_pole in
-    let coef = sqrt ((1. -. r)/.(1. +. r)) in
-    Matrix.product
-      (Matrix.z_rotation phi)
-      (
-        Matrix.product
-        (Matrix.y_rotation theta)
-        (Matrix.of_point (inverse_stereographic local_pole {
-          x = pt''.x /. coef;
-          y = pt''.y /. coef;
-          z = 0.;
-          weight = pt''.weight
-          })
-        )
-      )
-    |> Matrix.to_point
-    |> stereographic pole*)
   )
 
 (* To find a great circle, we take a point of the unit sphere and move it randomly,
-  so we can define our circle by a center (the origin) and another point *)
+  so we can define our circle by a center (the origin) and another point (the normal) *)
 let generate_great_circle r =
   Random.self_init ();
   let rand_theta = Random.float Float.pi in
@@ -144,7 +118,7 @@ let geometric_bisection pole rolls points zone =
     average_distance = 0.;
     max_distance = 0.
   } in
-  let better_diff = ref max_int in
+  let better_diff = ref infinity in
   for _ = 1 to rolls do
     let great_circle_pt = generate_great_circle pole.z in
 
@@ -158,16 +132,16 @@ let geometric_bisection pole rolls points zone =
     let rec discriminate group_in group_out diff = function
     | [] -> group_in, group_out, diff
     | point :: tl ->
-      if Utils.distance2 points.(point) circle_origin < radius then discriminate (point :: group_in) group_out (diff + 1) tl
-      else discriminate group_in (point :: group_out) (diff - 1) tl
+      if Utils.distance2 points.(point) circle_origin < radius then discriminate (point :: group_in) group_out (diff +. points.(point).weight) tl
+      else discriminate group_in (point :: group_out) (diff -. points.(point).weight) tl
 
     in
-    let group_in, group_out, diff = discriminate [] [] 0 zone in
+    let group_in, group_out, diff = discriminate [] [] 0. zone in
 
-    if abs diff < !better_diff then begin
+    if abs_float diff < !better_diff then begin
       zone_in.ids <- group_in;
       zone_out.ids <- group_out;
-      better_diff := abs diff
+      better_diff := abs_float diff
     end
   done;
 
@@ -191,28 +165,6 @@ let generate_zones points nb_zones rolls _alpha =
 
   let pole = Utils.calculate_sphere_pole points in
   Printf.printf "Pole: %.3f %.3f %.3f\n" pole.x pole.y pole.z;
-  (*let rec split zone =
-    Printf.printf "\rSplitting zone %d" !nb;
-    if !nb < nb_zones && [] <> zone then begin
-      let better_in, better_out = geometric_bisection pole rolls points zone in
-      incr nb;
-      if !nb < nb_zones then begin 
-        split better_in.ids;
-        split better_out.ids
-      end
-
-      (*if better_in.max_distance >= alpha *. better_in.average_distance
-        then split better_in.ids
-        else zones := better_in.ids :: !zones;
-
-      if better_out.max_distance >= alpha *. better_out.average_distance
-        then split better_out.ids
-        else zones := better_out.ids :: !zones;
-      end *)
-    in
-  let classes = Array.make n 0 in
-  split (range 0 n);
-  Printf.printf "Found %d zones\n" (List.length !zones);*)
   let nb = ref 1 in
   let zones = ref [range 0 n] in
   let classes = Array.make n 0 in

@@ -1,7 +1,7 @@
 let methods = [
   ("geojson", "Write a GeoJSON file", "output.geojson", Geojson.output_geojson);
-  ("bezier", "Plot a bezier curve", "output.svg", Bezier.plot_bezier);
-  ("chart", "Plot a chart", "output.svg", Chart.print_chart);
+  (*("bezier", "Plot a bezier curve", "output.svg", Bezier.plot_bezier);*)
+  (*("chart", "Plot a chart", "output.svg", Chart.print_chart);*)
 ]
 
 let () =

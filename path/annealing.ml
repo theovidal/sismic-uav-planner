@@ -173,7 +173,7 @@ let average_delta points n p =
 
 (* Simulated annealing algorithm *)
 let annealing zone_id points nb_operations delta data_folder =
-  let output = open_out (Printf.sprintf "%s/annealing-data-%d.txt" data_folder zone_id) in
+  let output = open_out (if data_folder = "" then "/dev/null" else Printf.sprintf "%s/annealing-data-%d.txt" data_folder zone_id) in
   Random.self_init ();
   let n = Array.length points in
   let invT = ref (1. /. (100. *. delta)) in
@@ -203,4 +203,4 @@ let annealing zone_id points nb_operations delta data_folder =
   let end_time = Sys.time () in
   let _, sigma, _ = perm in
   close_out output;
-  sigma, (end_time -. start_time)
+  sigma, !f, (end_time -. start_time)

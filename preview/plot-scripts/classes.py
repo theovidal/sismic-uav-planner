@@ -24,7 +24,7 @@ nb_classes = int(classes.readline())
 
 for i in range(nb_classes):
     colors.append(random.randint(0, 16777215))
-
+    
 for i in range(nb_points):
     point = points.readline().split(',')
     cl = int(classes.readline())

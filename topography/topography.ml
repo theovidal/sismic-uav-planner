@@ -15,4 +15,5 @@ let () =
     |> Clustering.ahc threshold
     |> Utils.gather points
     |> Array.iter (Utils.print_point output);
-  close_out output
+  close_out output;
+  print_string "Topography: Done.\n"

@@ -20,10 +20,14 @@ let () =
 
   let points = Utils.open_points input in
   
-  
   let rec choose_method = function
   | [] -> failwith (Printf.sprintf "Invalid method ; valide methods are %s" (String.concat ", " (List.map fst methods)))
-  | (name, f) :: _ when name = meth -> f points zones rolls alpha
+  | (name, f) :: _ when name = meth ->
+    let start = Sys.time () in
+    let res = f points zones rolls alpha in
+    let stop = Sys.time () in
+    Printf.printf "Time spent (in seconds): %f\n" (stop -. start);
+    res
   | _ :: tl -> choose_method tl in
   
   let classes, nb_classes = choose_method methods in
@@ -31,5 +35,5 @@ let () =
   Array.iter (fun c -> Printf.fprintf output_file "%d\n" c) classes;
 
   close_out output_file;
-  print_string "Done.\n"
+  print_string "Zones: Done.\n"
 

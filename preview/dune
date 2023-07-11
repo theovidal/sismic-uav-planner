@@ -1,4 +1,3 @@
 (executable
  (public_name preview)
- (name preview)
- (libraries "owl-plplot" "owl"))
+ (name preview))

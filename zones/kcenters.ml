@@ -42,11 +42,11 @@ let get_candidate points is_center centers =
   !max_i
 
 (* k-centers 2-approximation algorithm *)
-let kcenters points k _ _ =
+let kcenters points nb_zones _rolls _alpha =
   let n = Array.length points in
   let is_center = Array.make n false in
   let rec aux nb centers =
-    if nb = k then affect_classes points (Array.of_list centers)
+    if nb = nb_zones then affect_classes points (Array.of_list centers)
     else
       let c = get_candidate points is_center centers in
       is_center.(c) <- true;
@@ -54,5 +54,5 @@ let kcenters points k _ _ =
   in
   let first = Random.int n in
   is_center.(first) <- true;
-  aux 1 [points.(first)], k
+  aux 1 [points.(first)], nb_zones
   
