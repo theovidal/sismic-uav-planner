@@ -2,6 +2,10 @@
 .vscode
 data
 docs
+results/**/*.txt
+results/**/*.qmd
+results/**/*.json
+results/**/*.geojson
 node_modules
 _build
 *.svg
