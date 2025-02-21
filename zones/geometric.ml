@@ -160,7 +160,7 @@ let rec range a b =
   else a :: range (a + 1) b
 
 (* Execute geometric bisection until enough zones are determined *)
-let generate_zones points nb_zones rolls _alpha =
+let generate_zones points nb_zones rolls =
   let n = Array.length points in
 
   let pole = Utils.calculate_sphere_pole points in

@@ -73,7 +73,7 @@ let update_refs points centers refs =
   done;
   !has_changed
 
-let kmeans points nb_zones rolls _alpha =
+let kmeans points nb_zones rolls =
   let n = Array.length points in
   let centers = get_random_points nb_zones points in
   let refs = Array.make n 0 in

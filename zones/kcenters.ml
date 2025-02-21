@@ -42,7 +42,7 @@ let get_candidate points is_center centers =
   !max_i
 
 (* k-centers 2-approximation algorithm *)
-let kcenters points nb_zones _rolls _alpha =
+let kcenters points nb_zones _rolls =
   let n = Array.length points in
   let is_center = Array.make n false in
   let rec aux nb centers =
